@@ -34,6 +34,7 @@ while (($file = readdir D) && ($count < 1)) {
   @args = ("rename","\"$old_name\"","\"$new_name\"");
   system(@args) == 0 ; #or die "system @args failed: $?" ;
   if ($? != 0) {
+    $newFile = $root_dir . "/" . $new_name;
     if (-e $newFile) { /* it means that there are duplicated names after remove advertisment information from file name */
       print "Exist .\n";
       #$newFile = $dir_str . "\\" . "$new_name";
