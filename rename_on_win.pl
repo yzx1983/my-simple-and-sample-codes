@@ -28,27 +28,22 @@ while (($file = readdir D) && ($count < 1)) {
 #  $w2 =~ /\d+(.+)$/;
 
   print "old name : $old_name\n";
-  $new_name = $1; /* This may be a potential bug , if previous pattern not matched this string , $1 will leave stale value. */
+  $new_name = $1;
   print "new name : $new_name \n";
-  print cmdFile "rename \"$old_name\" \"$new_name\"\n"; /* since sometimes it needs "administrator" role to do rename , create a bat file so later you can run it with administrator role */
+
   @args = ("rename","\"$old_name\"","\"$new_name\"");
   system(@args) == 0 ; #or die "system @args failed: $?" ;
   if ($? != 0) {
-    $newFile = $root_dir . "/" . $new_name;
-    print "The full name is $newFile \n";
-    if (-e $newFile) {
+    if (-e $newFile) { /* it means that there are duplicated names after remove advertisment information from file name */
       print "Exist .\n";
-      $newFile = $dir_str . "\\" . "$new_name";
-      @rmArgs = ("del","$newFile");
+      #$newFile = $dir_str . "\\" . "$new_name";
+      @rmArgs = ("del","$old_name");
       system(@rmArgs);
-      system(@args);
-      if ($? != 0) {
-        exit;
-      }
+    } else {
+      print cmdFile "rename \"$old_name\" \"$new_name\"\n"; /* since sometimes it needs "administrator" role to do rename , create a bat file so later I can run it with administrator role */
     }
   }
-  $new_name=""; /* This is to try to avoid the bug however it actually should not work ...*/
-  $count;
+  $count++; /* for debug use , to set the max number of files to handle at one time */
 }
 
 close cmdFile;
